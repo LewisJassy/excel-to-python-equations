@@ -1,0 +1,225 @@
+Saline Aquifer CO₂ Storage Calculation Functions
+This documentation outlines the functions and formulas used to estimate CO₂ storage efficiency, plume radius, storage area, reservoir pressure, and density difference in a saline aquifer. Saline aquifers are geological formations filled with saltwater (brine), making them a suitable choice for long-term CO₂ storage due to their low economic value and large volumes.
+
+1. Storage Efficiency without Dip
+This function calculates the CO₂ storage efficiency in a saline aquifer without considering the dip angle of the reservoir. In saline formations, storage efficiency refers to the fraction of the pore volume that can be effectively occupied by injected CO₂.
+
+Formula:
+
+Storage Efficiency (No Dip)
+=
+𝐾
+⋅
+𝑡
+⋅
+ℎ
+⋅
+𝜙
+⋅
+𝑆
+CO2
+𝐴
+Storage Efficiency (No Dip)= 
+A
+K⋅t⋅h⋅ϕ⋅S 
+CO2
+​
+ 
+​
+ 
+Parameters:
+
+𝐾
+K (Permeability): Ability of the reservoir to transmit fluids, measured in milliDarcies (mD).
+𝑡
+t (Injection Time): Duration of CO₂ injection in years.
+ℎ
+h (Reservoir Thickness): Thickness of the saline aquifer in meters.
+𝜙
+ϕ (Porosity): Fraction of the reservoir rock that is pore space (empty space), as a decimal.
+𝑆
+CO2
+S 
+CO2
+​
+  (CO₂ Relative Permeability): Relative permeability of CO₂ in the saline formation.
+𝐴
+A (Reservoir Area): Area of the aquifer in square meters (can be set to 1 unit for efficiency calculation purposes).
+Returns:
+
+Storage efficiency as a percentage, indicating the effective pore space utilization for CO₂ storage in the aquifer.
+2. Storage Efficiency with Dip
+This function calculates storage efficiency in a saline aquifer while considering the dip (inclination) of the reservoir, which affects CO₂ migration and trapping within the aquifer.
+
+Formula:
+
+Storage Efficiency (With Dip)
+=
+𝐾
+⋅
+𝑡
+⋅
+ℎ
+⋅
+𝜙
+⋅
+𝑆
+CO2
+⋅
+sin
+⁡
+(
+𝜃
+)
+𝐴
+Storage Efficiency (With Dip)= 
+A
+K⋅t⋅h⋅ϕ⋅S 
+CO2
+​
+ ⋅sin(θ)
+​
+ 
+Parameters:
+
+Same parameters as "Storage Efficiency without Dip", plus:
+𝜃
+θ (Dip Angle): Angle of inclination of the aquifer in degrees, which is converted to radians in the calculation.
+Returns:
+
+Storage efficiency as a percentage, considering the dip angle for a more accurate representation of CO₂ distribution within the inclined aquifer.
+3. Radius of CO₂ Plume
+This function calculates the radial extent of the CO₂ plume within the saline aquifer, influenced by injection rate and aquifer properties. The radius reflects the distance CO₂ is expected to migrate from the injection point over time.
+
+Formula:
+
+Radius
+=
+𝑄
+⋅
+𝜇
+⋅
+𝐵
+𝜋
+⋅
+𝐾
+⋅
+ℎ
+⋅
+Δ
+𝑃
+Radius= 
+π⋅K⋅h⋅ΔP
+Q⋅μ⋅B
+​
+ 
+​
+ 
+Parameters:
+
+𝑄
+Q (Injection Rate): CO₂ injection rate, often measured in million tons per annum (converted to cubic meters per second).
+𝜇
+μ (CO₂ Viscosity): Viscosity of CO₂, in Pascal seconds (Pa·s).
+𝐵
+B: Dimensionless constant for volume conversion.
+𝐾
+K (Permeability): Permeability of the saline aquifer, in mD.
+ℎ
+h (Reservoir Thickness): Thickness of the saline aquifer in meters.
+Δ
+𝑃
+ΔP (Pressure Difference): Pressure differential driving CO₂ movement, in Pascals (Pa).
+Returns:
+
+Radius of the CO₂ plume in meters, providing an estimate of the plume extent within the saline aquifer.
+4. Area of CO₂ Plume
+Calculates the area covered by the CO₂ plume within the saline aquifer based on the calculated radius. This helps estimate the spatial footprint of CO₂ storage.
+
+Formula:
+
+Area
+=
+𝜋
+⋅
+Radius
+2
+2.59
+×
+1
+0
+6
+Area= 
+2.59×10 
+6
+ 
+π⋅Radius 
+2
+ 
+​
+ 
+Parameters:
+
+Radius: Radius of the CO₂ plume in meters.
+Constant:
+
+2.59
+×
+1
+0
+6
+2.59×10 
+6
+ : Conversion factor to convert square meters to square miles, for easier spatial interpretation.
+Returns:
+
+Area of the CO₂ plume in square miles, indicating the expected surface footprint of the injected CO₂ within the saline aquifer.
+5. Reservoir Pressure
+Calculates the pressure within the saline aquifer based on its depth and the regional pressure gradient. Reservoir pressure affects CO₂ injection dynamics and plume migration.
+
+Formula:
+
+Reservoir Pressure
+=
+Pressure Gradient
+×
+Reservoir Depth (in feet)
+Reservoir Pressure=Pressure Gradient×Reservoir Depth (in feet)
+Parameters:
+
+Reservoir Depth: Depth of the aquifer in meters, converted to feet.
+Pressure Gradient: Pressure increase per unit depth, in psi/ft.
+Returns:
+
+Reservoir pressure in pounds per square inch (psi), providing a measure of the initial aquifer pressure before CO₂ injection.
+6. Delta Density
+Calculates the density difference between the saline brine and CO₂. This difference affects buoyancy forces, which drive CO₂ migration and trapping within the aquifer.
+
+Formula:
+
+Δ
+Density
+=
+Water Density
+−
+CO2 Density
+ΔDensity=Water Density−CO2 Density
+Parameters:
+
+Water Density: Density of the saline water (brine) in kg/m³.
+CO₂ Density: Density of CO₂ in kg/m³.
+Returns:
+
+Delta density in kg/m³, representing the buoyancy effect that influences CO₂ movement and storage stability in the saline aquifer.
+Workflow for Saline Aquifer CO₂ Storage Calculations
+Data Input: Input the necessary aquifer properties such as permeability, porosity, reservoir depth, CO₂ and brine densities, pressure gradient, and injection conditions.
+Calculate Storage Efficiency:
+Use calculate_storage_efficiency_no_dip and calculate_storage_efficiency_dip to assess the storage efficiency in both flat and inclined aquifers.
+Determine CO₂ Plume Radius:
+Use calculate_radius to estimate the migration extent of CO₂ in the aquifer.
+Calculate Plume Area:
+Use calculate_area to determine the expected area covered by the CO₂ plume.
+Determine Reservoir Pressure:
+Use calculate_reservoir_pressure to find the aquifer pressure at depth.
+Calculate Density Difference:
+Use calculate_density to compute the density difference between CO₂ and brine, which impacts the migration pattern and stability of CO₂ in the aquifer.
