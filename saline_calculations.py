@@ -118,6 +118,59 @@ def calculate_density(CO2_density, water_density):
     delta_density = water_density - CO2_density
     return delta_density
 
+def calculate_radius_dong(injection_rate, reservoir_thickness, injection_time, porosity, permeability):
+    """
+    Calculate the radius of the aquifer using the Dong et al. (2017) method.
+    
+    :param injection_rate: Injection rate in million tons per annum.
+    :param reservoir_thickness: Thickness of the reservoir in meters.
+    :param injection_time: Injection time in years.
+    :param porosity: Porosity of the reservoir in percent.
+    :param reservoir_depth: Depth of the reservoir in meters.
+    :param pressure_gradient: Pressure gradient in psi/ft.
+    :return: Radius of the aquifer in meters.
+    """
+    C = 1.0 # Empirical constantfor unit adjustments
+    radius_dong = C * math.sqrt(injection_rate * injection_time / (porosity * reservoir_thickness * permeability))
+    return radius_dong
+
+def calculate_area_dong(radius):
+    """
+    Calculate the area of the aquifer using the Dong et al. (2017) method.
+    
+    :param radius: Radius of the aquifer in meters.
+    :return: Area of the aquifer in square meters.
+    """
+    area_dong = (radius ** 2) * math.pi / 2.59e6 # Convert to square miles
+    return area_dong
+
+def calculate_radius_nordbotten(injection_rate, reservoir_thickness, injection_time, porosity, permeability, reservoir_depth):
+    """
+    Calculate the radius of the aquifer using the Nordbotten et al. (2018) method.
+    
+    :param injection_rate: Injection rate in million tons per annum.
+    :param reservoir_thickness: Thickness of the reservoir in meters.
+    :param injection_time: Injection time in years.
+    :param porosity: Porosity of the reservoir in percent.
+    :param reservoir_depth: Depth of the reservoir in meters.
+    :param pressure_gradient: Pressure gradient in psi/ft.
+    :param reservoir_angle: Reservoir angle in degrees.
+    :return: Radius of the aquifer in meters.
+    """
+    C = 2.5 # Empirical constant for unit adjustments
+    reservoir_depth_factor = 1 + (reservoir_depth / 1000) # Arbitrary factor to adjust for depth
+    radius_nordbotten = C * math.sqrt(injection_rate * injection_time / (porosity * reservoir_thickness * permeability)) * reservoir_depth_factor
+    return radius_nordbotten
+
+def calculate_area_nordbotten(radius):
+    """
+    Calculate the area of the aquifer using the Nordbotten et al. (2018) method.
+    
+    :param radius: Radius of the aquifer in meters.
+    :return: Area of the aquifer in square meters.
+    """
+    area_nordbotten = (radius ** 2) * math.pi / 2.59e6 # Convert to square miles
+    return area_nordbotten
 
 def main():
     file_path = "Calculations for python - Saline Storage.csv"
@@ -146,6 +199,11 @@ def main():
     area = calculate_area(radius)
     reservoir_pressure = calculate_reservoir_pressure(reservoir_depth, pressure_gradient)
     delta_density = calculate_density(CO2_density, water_density)
+    radius_dong = calculate_radius_dong(injection_rate, reservoir_thickness, injection_time, porosity, permeability)
+    area_dong = calculate_area_dong(radius_dong)
+
+    radius_nordbotten = calculate_radius_nordbotten(injection_rate, reservoir_thickness, injection_time, porosity, permeability, reservoir_depth)
+    area_nordbotten = calculate_area_nordbotten(radius_nordbotten)
 
     # return storage_efficiency_no_dip, storage_efficiency_dip, radius, area, reservoir_pressure, delta_density
 
@@ -156,6 +214,10 @@ def main():
     print(f"Area: {area} square miles")
     print(f"Reservoir Pressure: {reservoir_pressure} psi")
     print(f"Density of Saline Solution: {delta_density} kg/m^2")
+    print(f"Radius (Dong and Duan method): {radius_dong} meters")
+    print(f"Area (Dong and Duan method): {area_dong} square miles")
+    print(f"Radius (Nordbotten method): {radius_nordbotten} meters")
+    print(f"Area (Nordbotten method): {area_nordbotten} square miles")
 
 if __name__ == "__main__":
     main()
