@@ -1,6 +1,10 @@
 import pandas as pd
 import math
 
+# global variable
+ETA = 1.0 # Replace this with the actual value
+GAMMA = 1.0 # Replace this with the actual value
+
 def extract_saline_data(file_path):
     """
     Extract saline data from a CSV file.
@@ -66,23 +70,19 @@ def calculate_storage_efficiency_with_dip(injection_rate, reservoir_thickness, i
     storage_efficiency = (permeability * injection_time * reservoir_thickness * porosity * CO2_relative_permeability * math.sin(dip_angle_radians)) / area
     return storage_efficiency * 100  # Convert to percent
 
-def calculate_radius(injection_rate_m2_s, CO2_viscosity, permeability, reservoir_thickness, pressure_gradient, reservoir_depth):
+def calculate_radius_dong_duan(injection_rate, permeability, porosity):
     """
-    Calculate the radius of the aquifer.
+    Calculate the radius of the CO2 plume using the Dong and Duan method.
     
-    :param injection_rate_m2_s: Injection rate in cubic meters per second.
-    :param CO2_viscosity: Viscosity of CO2 in Pa·s.
+    :param injection_rate: Injection rate in million tons per annum.
     :param permeability: Permeability of the reservoir in mD.
-    :param reservoir_thickness: Thickness of the reservoir in meters.
-    :param pressure_gradient: Pressure gradient in Pa/m.
-    :param reservoir_depth: Depth of the reservoir in meters.
-    :return: Radius of the aquifer in meters.
+    :param porosity: Porosity of the reservoir in percent.
+    :return: Radius of the CO2 plume in meters.
     """
-
-    delta_pressure = pressure_gradient * reservoir_depth * 2.28084 # Pressure difference in psi to Pa
-    B = 1 # Dimensional factor(assume 1)
-    radius = math.sqrt((injection_rate_m2_s * CO2_viscosity * B) / (math.pi * permeability * reservoir_thickness * delta_pressure))
-    return radius
+    # Convert injection rate to cubic meters per second
+    Q = injection_rate * 1e6 / (365.25 * 24 * 3600)
+    radius_dong_duan = ETA * (GAMMA * permeability / porosity) ** 0.25 * math.sqrt(Q)
+    return radius_dong_duan
 
 
 def calculate_area(radius):
@@ -144,22 +144,18 @@ def calculate_area_dong(radius):
     area_dong = (radius ** 2) * math.pi / 2.59e6 # Convert to square miles
     return area_dong
 
-def calculate_radius_nordbotten(injection_rate, reservoir_thickness, injection_time, porosity, permeability, reservoir_depth):
+def calculate_radius_nordbotten(injection_rate, permeability, porosity):
     """
-    Calculate the radius of the aquifer using the Nordbotten et al. (2018) method.
+    Calculate the radius of the CO2 plume using the Nordbotten method.
     
     :param injection_rate: Injection rate in million tons per annum.
-    :param reservoir_thickness: Thickness of the reservoir in meters.
-    :param injection_time: Injection time in years.
+    :param permeability: Permeability of the reservoir in mD.
     :param porosity: Porosity of the reservoir in percent.
-    :param reservoir_depth: Depth of the reservoir in meters.
-    :param pressure_gradient: Pressure gradient in psi/ft.
-    :param reservoir_angle: Reservoir angle in degrees.
-    :return: Radius of the aquifer in meters.
+    :return: Radius of the CO2 plume in meters.
     """
-    C = 2.5 # Empirical constant for unit adjustments
-    reservoir_depth_factor = 1 + (reservoir_depth / 1000) # Arbitrary factor to adjust for depth
-    radius_nordbotten = C * math.sqrt(injection_rate * injection_time / (porosity * reservoir_thickness * permeability)) * reservoir_depth_factor
+    # Convert injection rate to cubic meters per second
+    Q = injection_rate * 1e6 / (365.25 * 24 * 3600)
+    radius_nordbotten = ETA * (GAMMA * permeability / porosity) ** 0.25 * math.sqrt(Q)
     return radius_nordbotten
 
 def calculate_area_nordbotten(radius):
@@ -195,13 +191,12 @@ def main():
     # Perfom calculations
     storage_efficiency_no_dip = calculate_storage_efficiency_no_dip(injection_rate, reservoir_thickness, injection_time, porosity, reservoir_depth, pressure_gradient, reservoir_angle, permeability, water_salinity, CO2_relative_permeability, water_relative_permeability, temperature)
     storage_efficiency_dip = calculate_storage_efficiency_with_dip(injection_rate, reservoir_thickness, injection_time, porosity, reservoir_depth, pressure_gradient, reservoir_angle, permeability, water_salinity, CO2_relative_permeability, water_relative_permeability, temperature)
-    radius = calculate_radius(injection_rate, reservoir_thickness, injection_time, porosity, reservoir_depth, pressure_gradient)
+    radius = calculate_radius_dong_duan(injection_rate, permeability, porosity)
     area = calculate_area(radius)
     reservoir_pressure = calculate_reservoir_pressure(reservoir_depth, pressure_gradient)
     delta_density = calculate_density(CO2_density, water_density)
     radius_dong = calculate_radius_dong(injection_rate, reservoir_thickness, injection_time, porosity, permeability)
     area_dong = calculate_area_dong(radius_dong)
-
     radius_nordbotten = calculate_radius_nordbotten(injection_rate, reservoir_thickness, injection_time, porosity, permeability, reservoir_depth)
     area_nordbotten = calculate_area_nordbotten(radius_nordbotten)
 
